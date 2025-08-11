@@ -1,0 +1,83 @@
+
+// 1. Entero (Int)
+var edad: Int = 25
+print("Edad: \(edad)")
+
+// 2. Decimal (Double)
+var precio: Double = 19.99
+print("Precio: \(precio)")
+
+// 3. Cadena de texto (String)
+var nombre: String = "Juan"
+print("Nombre: \(nombre)")
+
+// 4. Booleano (Bool)
+var estaActivo: Bool = true
+print("¿Está activo?: \(estaActivo)")
+
+// 5. Caracter (Character)
+var letraInicial: Character = "J"
+print("Letra inicial: \(letraInicial)")
+
+// 6. Constante (let)
+let pi: Double = 3.14159
+print("Valor de Pi: \(pi)")
+
+// 7. Array de enteros
+var numeros: [Int] = [1, 2, 3, 4, 5]
+print("Números: \(numeros)")
+
+// 8. Array de cadenas
+var frutas: [String] = ["Manzana", "Banana", "Cereza"]
+print("Frutas: \(frutas)")
+
+// 9. Diccionario de clave-valor
+var persona: [String: String] = ["nombre": "Ana", "edad": "30"]
+print("Persona: \(persona)")
+
+// 10. Set de enteros (sin duplicados)
+var numerosUnicos: Set<Int> = [1, 2, 3, 4, 5]
+print("Números únicos: \(numerosUnicos)")
+
+// 11. Tupla (diferentes tipos)
+var usuario: (nombre: String, edad: Int) = ("Pedro", 29)
+print("Usuario: \(usuario.nombre), Edad: \(usuario.edad)")
+
+// 12. Optional (Variable que puede ser nula)
+var ciudad: String? = "Madrid"
+print("Ciudad: \(ciudad ?? "No disponible")")
+
+// 13. Fecha (Date)
+var hoy: Date = Date()
+print("Fecha de hoy: \(hoy)")
+
+// 14. Valor flotante (Float)
+var temperatura: Float = 21.5
+print("Temperatura: \(temperatura)")
+
+// 15. Intervalo (Range)
+var rango: ClosedRange<Int> = 1...10
+print("Rango: \(rango)")
+
+// 16. Cálculo de porcentaje
+var porcentaje: Double = 85.5
+print("Porcentaje: \(porcentaje)%")
+
+// 17. Contador (con incremento)
+var contador: Int = 0
+contador += 1
+print("Contador: \(contador)")
+
+// 18. Fecha y hora (DateFormatter)
+var formatter = DateFormatter()
+formatter.dateStyle = .short
+var fechaFormateada: String = formatter.string(from: hoy)
+print("Fecha formateada: \(fechaFormateada)")
+
+// 19. Referencia a una función
+var saludar: (String) -> String = { nombre in "Hola, \(nombre)!" }
+print(saludar("Carlos"))
+
+// 20. Intervalo de tiempo (TimeInterval)
+var tiempo: TimeInterval = 3600  // en segundos
+print("Tiempo: \(tiempo) segundos")
