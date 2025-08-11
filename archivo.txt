@@ -1,0 +1,42 @@
+import Foundation
+
+// 5 variables explícitas
+var numeroEntero: Int = 42
+var numeroDecimal: Double = 3.14
+var texto: String = "Hola Mundo"
+var esVerdadero: Bool = true
+var caracter: Character = "A"
+
+// 5 variables implícitas
+var edad = 25
+var altura = 1.75
+var nombre = "Juan"
+var activo = false
+var letra = "Z"
+
+// 5 constantes explícitas
+let PI: Double = 3.1416
+let saludo: String = "¡Bienvenido!"
+let diasSemana: Int = 7
+let esRapido: Bool = true
+let simbolo: Character = "#"
+
+// 5 constantes implícitas
+let ciudad = "Ciudad Juárez"
+let temperatura = 28
+let peso = 65.5
+let conectado = true
+let inicial = "J"
+
+// Imprimir tipos de las variables y constantes implícitas
+print("Tipo de edad:", type(of: edad))
+print("Tipo de altura:", type(of: altura))
+print("Tipo de nombre:", type(of: nombre))
+print("Tipo de activo:", type(of: activo))
+print("Tipo de letra:", type(of: letra))
+
+print("Tipo de ciudad:", type(of: ciudad))
+print("Tipo de temperatura:", type(of: temperatura))
+print("Tipo de peso:", type(of: peso))
+print("Tipo de conectado:", type(of: conectado))
+print("Tipo de inicial:", type(of: inicial))
