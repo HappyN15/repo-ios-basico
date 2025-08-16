@@ -1,0 +1,36 @@
+import Foundation
+
+// Número aleatorio que la computadora "piensa"
+let numeroSecreto = Int.random(in: 1...100)
+
+// Contador de intentos
+var intentos = 0
+
+print("🎲 Adivina el número (entre 1 y 100)")
+
+// Función para validar la entrada
+func validarEntrada() -> Int {
+    while true {
+        print("Por favor introduce un número: ", terminator: "")
+        if let entrada = readLine(), let numero = Int(entrada) {
+            return numero
+        } else {
+            print("Lo que introdujiste no es un número entero válido. Intenta de nuevo.")
+        }
+    }
+}
+
+// Bucle principal del juego
+while true {
+    let respuestaDelUsuario = validarEntrada()
+    intentos += 1
+    
+    if respuestaDelUsuario == numeroSecreto {
+        print("Ganaste! El número era \(numeroSecreto). Lo lograste en \(intentos) intentos 🎉")
+        break
+    } else if respuestaDelUsuario < numeroSecreto {
+        print(" El número secreto es mayor.")
+    } else {
+        print(" El número secreto es menor.")
+    }
+}
