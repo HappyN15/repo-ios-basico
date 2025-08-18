@@ -12,7 +12,7 @@ var edad = 25
 var altura = 1.75
 var nombre = "Juan"
 var activo = false
-var letra: Character = "Z"   // corregido a Character
+var listaNumeros = [1, 2, 3, 4, 5]   // Nuevo ejemplo en lugar de "letra"
 
 // 5 constantes explícitas
 let PI: Double = 3.1416
@@ -26,17 +26,18 @@ let ciudad = "Ciudad Juárez"
 let temperatura = 28
 let peso = 65.5
 let conectado = true
-let inicial: Character = "J"   // corregido a Character
+let paises = ["México", "Argentina", "España"]  // Nuevo ejemplo en lugar de "inicial"
 
 // Imprimir tipos de las variables y constantes implícitas
 print("Tipo de edad:", type(of: edad))
 print("Tipo de altura:", type(of: altura))
 print("Tipo de nombre:", type(of: nombre))
 print("Tipo de activo:", type(of: activo))
-print("Tipo de letra:", type(of: letra))
+print("Tipo de listaNumeros:", type(of: listaNumeros))
 
 print("Tipo de ciudad:", type(of: ciudad))
 print("Tipo de temperatura:", type(of: temperatura))
 print("Tipo de peso:", type(of: peso))
 print("Tipo de conectado:", type(of: conectado))
-print("Tipo de inicial:", type(of: inicial))
+print("Tipo de paises:", type(of: paises))
+
