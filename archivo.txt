@@ -12,7 +12,7 @@ var edad = 25
 var altura = 1.75
 var nombre = "Juan"
 var activo = false
-var letra = "Z"
+var letra: Character = "Z"   // corregido a Character
 
 // 5 constantes explícitas
 let PI: Double = 3.1416
@@ -26,7 +26,7 @@ let ciudad = "Ciudad Juárez"
 let temperatura = 28
 let peso = 65.5
 let conectado = true
-let inicial = "J"
+let inicial: Character = "J"   // corregido a Character
 
 // Imprimir tipos de las variables y constantes implícitas
 print("Tipo de edad:", type(of: edad))
