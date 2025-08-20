@@ -1,0 +1,114 @@
+// Facciones: Imperio del Hombre, Tiranidos, Orkos, Necrons y el Caos
+
+class ImperioDelHombre {
+    var nombre: String
+    var soldados: Int
+    
+    init(nombre: String = "Astartes", soldados: Int = 1000) {
+        self.nombre = nombre
+        self.soldados = soldados
+    }
+    
+    func atacar() {
+        print("\(nombre) dispara sus bólters contra el enemigo.")
+    }
+    
+    func reclutar(cantidad: Int) {
+        soldados += cantidad
+        print("El Imperio recluta \(cantidad) nuevos soldados. Total: \(soldados)")
+    }
+}
+
+class Tiranidos {
+    var enjambre: String
+    var numero: Int
+    
+    init(enjambre: String = "Genestealers", numero: Int = 500) {
+        self.enjambre = enjambre
+        self.numero = numero
+    }
+    
+    func devorar() {
+        print("El enjambre \(enjambre) devora todo a su paso.")
+    }
+    
+    func multiplicarse(cantidad: Int) {
+        numero += cantidad
+        print("Los Tiranidos se multiplican en \(cantidad). Total: \(numero)")
+    }
+}
+
+class Orkos {
+    var clan: String
+    var guerreros: Int
+    
+    init(clan: String = "Goff", guerreros: Int = 800) {
+        self.clan = clan
+        self.guerreros = guerreros
+    }
+    
+    func gritar() {
+        print("¡WAAAGH! Los orkos del clan \(clan) cargan hacia el combate.")
+    }
+    
+    func fabricarArma(tipo: String) {
+        print("Los orkos improvisan un \(tipo) con chatarra.")
+    }
+}
+
+class Necrons {
+    var dinastia: String
+    var guerreros: Int
+    
+    init(dinastia: String = "Sautekh", guerreros: Int = 300) {
+        self.dinastia = dinastia
+        self.guerreros = guerreros
+    }
+    
+    func resucitar() {
+        print("Los Necrons de la dinastía \(dinastia) vuelven a levantarse.")
+    }
+    
+    func teleportar() {
+        print("Las legiones Necron se teletransportan al campo de batalla.")
+    }
+}
+
+class Caos {
+    var dios: String
+    var campeones: Int
+    
+    init(dios: String = "Khorne", campeones: Int = 400) {
+        self.dios = dios
+        self.campeones = campeones
+    }
+    
+    func corromper(objetivo: String) {
+        print("Los campeones del Caos intentan corromper a \(objetivo) en nombre de \(dios).")
+    }
+    
+    func invocarDemonio() {
+        print("Un demonio del Caos surge desde la disformidad por el poder de \(dios).")
+    }
+}
+
+// Ejemplo de uso
+let imperio = ImperioDelHombre()
+imperio.atacar()
+imperio.reclutar(cantidad: 200)
+
+let tiranidos = Tiranidos()
+tiranidos.devorar()
+tiranidos.multiplicarse(cantidad: 150)
+
+let orkos = Orkos()
+orkos.gritar()
+orkos.fabricarArma(tipo: "cañón gigante")
+
+let necrons = Necrons()
+necrons.resucitar()
+necrons.teleportar()
+
+let caos = Caos()
+caos.corromper(objetivo: "Imperio del Hombre")
+caos.invocarDemonio()
