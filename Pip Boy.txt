@@ -1,0 +1,442 @@
+import SwiftUI
+import Combine
+
+// MARK: - Theme
+enum PipBoyTheme {
+    static let background = Color.black
+    static let panel = Color(red: 0.02, green: 0.25, blue: 0.06) // dark green
+    static let accent = Color(red: 0.45, green: 0.95, blue: 0.40) // bright green
+    static let dimAccent = Color(red: 0.26, green: 0.6, blue: 0.28)
+    static let text = Color.green
+    static let mono = Font.system(.body, design: .monospaced)
+}
+
+// MARK: - ViewModel
+final class PipBoyViewModel: ObservableObject {
+    @Published var health: Double = 78
+    @Published var rads: Double = 12
+    @Published var xp: Double = 34
+    @Published var selectedSection: Section = .stats
+    @Published var consoleLines: [String] = [
+        "INITIALIZING...",
+        "WELCOME, VAULT-USER",
+        "LOADING MODULES..."
+    ]
+    
+    enum Section: String, CaseIterable, Identifiable {
+        case stats = "STATS"
+        case items = "ITEMS"
+        case map = "MAP"
+        case radio = "RADIO"
+        var id: String { rawValue }
+    }
+    
+    private var timer: AnyCancellable?
+    
+    init() {
+        // Simulate updates
+        timer = Timer.publish(every: 4.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    self.health = max(0, min(100, self.health + Double.random(in: -6...4)))
+                    self.rads = max(0, min(100, self.rads + Double.random(in: -2...2)))
+                    self.xp = max(0, min(100, self.xp + Double.random(in: 0...1.5)))
+                    self.consoleLines.append("SYS: tick @ \(Date().formatted(.dateTime.hour().minute().second()))")
+                    if self.consoleLines.count > 8 { self.consoleLines.removeFirst() }
+                }
+            }
+    }
+    
+    deinit { timer?.cancel() }
+}
+
+
+// MARK: - Main View
+struct PipBoyView: View {
+    @StateObject private var vm = PipBoyViewModel()
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                PipBoyTheme.background
+                    .ignoresSafeArea()
+                
+                HStack(spacing: 12) {
+                    // Left vertical nav & quick info
+                    VStack(spacing: 12) {
+                        LogoHeader()
+                            .frame(height: 80)
+                        
+                        ForEach(vm.Section.allCases) { s in
+                            SectionButton(title: s.rawValue,
+                                          isSelected: vm.selectedSection == s) {
+                                withAnimation { vm.selectedSection = s }
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        // small status numbers
+                        VStack(alignment: .leading, spacing: 6) {
+                            MiniStatusRow(icon: "heart.fill", label: "HP", value: "\(Int(vm.health))%")
+                            MiniStatusRow(icon: "radioactivity", label: "RADS", value: "\(Int(vm.rads))")
+                            MiniStatusRow(icon: "star.fill", label: "XP", value: "\(Int(vm.xp))%")
+                        }
+                        .padding(8)
+                        .background(PipBoyTheme.panel.opacity(0.9))
+                        .cornerRadius(8)
+                    }
+                    .frame(width: min(160, geo.size.width * 0.2))
+                    .padding(.vertical, 16)
+                    
+                    // Main display
+                    VStack(spacing: 12) {
+                        // Top row: big status & gauges
+                        HStack(spacing: 12) {
+                            InfoCard(title: "VITALS") {
+                                VStack(alignment: .leading, spacing: 10) {
+                                    StatBar(label: "HEALTH", value: vm.health)
+                                    StatBar(label: "RADIATION", value: vm.rads)
+                                    StatBar(label: "XP", value: vm.xp)
+                                }
+                                .padding(.vertical, 8)
+                            }
+                            
+                            // Graphical gauges
+                            VStack(spacing: 8) {
+                                RadialGauge(value: vm.health, label: "HP")
+                                    .frame(width: 140, height: 140)
+                                RadialGauge(value: vm.rads, label: "RADS")
+                                    .frame(width: 140, height: 140)
+                            }
+                            .padding(8)
+                            .background(PipBoyTheme.panel)
+                            .cornerRadius(12)
+                        }
+                        
+                        // Middle: big content area (changes with section)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(PipBoyTheme.panel)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            
+                            HStack {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(vm.selectedSection.rawValue)
+                                        .font(.headline)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(PipBoyTheme.accent)
+                                        .padding(.bottom, 4)
+                                    
+                                    switch vm.selectedSection {
+                                    case .stats:
+                                        StatsDetailView()
+                                    case .items:
+                                        ItemsListView()
+                                    case .map:
+                                        MapPlaceholderView()
+                                    case .radio:
+                                        RadioView()
+                                    }
+                                    
+                                    Spacer()
+                                }
+                                .padding(12)
+                                
+                                // Right: console / logs
+                                ConsoleView(lines: vm.consoleLines)
+                                    .frame(width: 260)
+                            }
+                        }
+                        .frame(maxHeight: .infinity)
+                        
+                        // Bottom controls
+                        HStack {
+                            Text("VAULT-TECH OS v1.0")
+                                .font(PipBoyTheme.mono)
+                                .foregroundColor(PipBoyTheme.dimAccent)
+                            
+                            Spacer()
+                            
+                            HStack(spacing: 12) {
+                                SmallControlButton(systemName: "power", label: "OFF") { /* action */ }
+                                SmallControlButton(systemName: "gear", label: "OPTIONS") { /* action */ }
+                            }
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                    }
+                    .padding(.vertical, 16)
+                }
+                .padding(.horizontal, 14)
+                .overlay(ScanlineOverlay().blendMode(.screen)) // subtle scanlines
+            }
+        }
+    }
+}
+
+// MARK: - Subviews & Components
+
+struct LogoHeader: View {
+    var body: some View {
+        HStack {
+            Image(systemName: "circle.grid.3x3.fill")
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(PipBoyTheme.accent)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("VAULT-TECH")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(PipBoyTheme.accent)
+                Text("PIP-BOY UI")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(PipBoyTheme.dimAccent)
+            }
+            Spacer()
+        }
+        .padding(8)
+        .background(PipBoyTheme.panel)
+        .cornerRadius(8)
+    }
+}
+
+struct SectionButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(PipBoyTheme.mono.weight(.semibold))
+                .frame(maxWidth: .infinity, minHeight: 36)
+                .foregroundColor(isSelected ? PipBoyTheme.background : PipBoyTheme.accent)
+                .padding(.horizontal, 8)
+                .background(isSelected ? PipBoyTheme.accent : PipBoyTheme.panel)
+                .cornerRadius(6)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+    }
+}
+
+struct MiniStatusRow: View {
+    let icon: String
+    let label: String
+    let value: String
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(PipBoyTheme.accent)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(label).font(.caption2).foregroundColor(PipBoyTheme.dimAccent)
+                Text(value).font(.caption).fontWeight(.semibold).foregroundColor(PipBoyTheme.text)
+            }
+            Spacer()
+        }
+    }
+}
+
+struct InfoCard<Content: View>: View {
+    let title: String
+    let content: () -> Content
+    init(title: String, @ViewBuilder content: @escaping () -> Content) {
+        self.title = title
+        self.content = content
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(PipBoyTheme.mono.weight(.bold))
+                .foregroundColor(PipBoyTheme.accent)
+            content()
+        }
+        .padding(12)
+        .background(PipBoyTheme.panel)
+        .cornerRadius(12)
+    }
+}
+
+struct StatBar: View {
+    let label: String
+    let value: Double // 0..100
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(label).font(.caption2).foregroundColor(PipBoyTheme.dimAccent)
+                Spacer()
+                Text("\(Int(value))%").font(.caption2).foregroundColor(PipBoyTheme.text)
+            }
+            GeometryReader { g in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(PipBoyTheme.background.opacity(0.6))
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(LinearGradient(gradient: Gradient(colors: [PipBoyTheme.accent, PipBoyTheme.dimAccent]),
+                                             startPoint: .leading, endPoint: .trailing))
+                        .frame(width: max(6, g.size.width * CGFloat(value / 100)))
+                }
+            }
+            .frame(height: 10)
+        }
+        .frame(height: 34)
+    }
+}
+
+struct RadialGauge: View {
+    let value: Double // 0..100
+    let label: String
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(PipBoyTheme.background.opacity(0.6), lineWidth: 12)
+            Circle()
+                .trim(from: 0, to: CGFloat(value / 100))
+                .stroke(style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .overlay(
+                    Circle().stroke(PipBoyTheme.background.opacity(0.25), lineWidth: 1)
+                )
+                .foregroundStyle(AngularGradient(gradient: Gradient(colors: [PipBoyTheme.accent, PipBoyTheme.dimAccent]),
+                                                 center: .center))
+            VStack {
+                Text(label).font(.caption2).foregroundColor(PipBoyTheme.dimAccent)
+                Text("\(Int(value))").font(.title2).fontWeight(.bold).foregroundColor(PipBoyTheme.text)
+            }
+        }
+        .padding(6)
+    }
+}
+
+struct ConsoleView: View {
+    let lines: [String]
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("CONSOLE").font(.caption).foregroundColor(PipBoyTheme.dimAccent)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(lines.indices, id: \.self) { i in
+                        Text(lines[i])
+                            .font(PipBoyTheme.mono)
+                            .font(.caption2)
+                            .foregroundColor(PipBoyTheme.text)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }.padding(8)
+            }
+            .background(Color.black.opacity(0.5))
+            .cornerRadius(8)
+            .frame(maxHeight: 180)
+        }
+        .padding(8)
+    }
+}
+
+struct SmallControlButton: View {
+    let systemName: String
+    let label: String
+    let action: ()->Void
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: systemName).font(.caption)
+                Text(label).font(.caption2).fontWeight(.semibold)
+            }
+            .padding(8)
+            .background(PipBoyTheme.panel)
+            .cornerRadius(8)
+            .foregroundColor(PipBoyTheme.accent)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct ScanlineOverlay: View {
+    var body: some View {
+        GeometryReader { g in
+            let rows = Int(g.size.height / 4)
+            VStack(spacing: 0) {
+                ForEach(0..<rows, id: \.self) { i in
+                    Rectangle()
+                        .fill(Color.white.opacity(0.003 + (i % 10 == 0 ? 0.01 : 0))) // very subtle
+                        .frame(height: 2)
+                }
+            }
+            .clipped()
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+// MARK: - Placeholder content views for each section
+struct StatsDetailView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("STRENGTH  6    PERCEPTION 7")
+            Text("ENDURANCE 8    CHARISMA 5")
+            Text("INTELLIGENCE 7    AGILITY 6")
+            Text("LUCK 4")
+        }
+        .font(PipBoyTheme.mono)
+        .foregroundColor(PipBoyTheme.text.opacity(0.95))
+    }
+}
+
+struct ItemsListView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Stimpak x3")
+            Text("RadAway x1")
+            Text("10mm Ammo x56")
+            Text("Pip-Boy Lamp")
+        }
+        .font(PipBoyTheme.mono)
+        .foregroundColor(PipBoyTheme.text.opacity(0.95))
+    }
+}
+
+struct MapPlaceholderView: View {
+    var body: some View {
+        VStack {
+            Spacer()
+            Image(systemName: "map.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(height: 120)
+                .foregroundColor(PipBoyTheme.dimAccent)
+            Text("MAP DATA UNAVAILABLE")
+                .font(PipBoyTheme.mono)
+                .foregroundColor(PipBoyTheme.text)
+            Spacer()
+        }
+    }
+}
+
+struct RadioView: View {
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("RADIO: NTM 88.7 FM")
+            Text("TRACK: 'Vault City Swing' - 02:47")
+            HStack {
+                Image(systemName: "play.fill")
+                Image(systemName: "backward.fill")
+                Image(systemName: "forward.fill")
+            }
+            .font(.headline)
+        }
+        .font(PipBoyTheme.mono)
+        .foregroundColor(PipBoyTheme.text)
+    }
+}
+
+// MARK: - Preview
+struct PipBoyView_Previews: PreviewProvider {
+    static var previews: some View {
+        PipBoyView()
+            .previewInterfaceOrientation(.landscapeLeft)
+            .previewLayout(.fixed(width: 1366, height: 768))
+    }
+}
