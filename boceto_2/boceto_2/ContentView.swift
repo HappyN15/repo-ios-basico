@@ -22,12 +22,13 @@ struct ContentView: View {
                 if pantalla_actual == .pantalla_1{
                     pantalla_actual = .pantalla_2
                 }
+                else if pantalla_actual == .pantalla_2{
+                    pantalla_actual = .pantalla_3
+                }
                 else{
                     pantalla_actual = .pantalla_1
                 }
-                else if{
-                    
-                }
+
             }
         switch(pantalla_actual){
         case .pantalla_1:
@@ -35,6 +36,8 @@ struct ContentView: View {
             
         case .pantalla_2:
             Pantalla2()
+        case .pantalla_3:
+            PantallaOpciones()
         }
     }
 }
