@@ -1,9 +1,3 @@
-//
-//  controlador_app.swift
-//  control_navegacion
-//
-//  Created by Jadzia Gallegos on 03/10/25.
-//
 import SwiftUI
 import Foundation
 
@@ -29,7 +23,6 @@ class ControladorGeneral {
         guard let publicaciones_descargadas: [Publicacion] =
                 await ServicioWeb().descargar_datos(url: "\(url_base)/posts")
         else { return }
-        
         publicaciones = publicaciones_descargadas
     }
     
@@ -37,7 +30,6 @@ class ControladorGeneral {
         guard let comentarios_descargados: [Comentario] =
                 await ServicioWeb().descargar_datos(url: "\(url_base)/posts/\(id_publicacion)/comments")
         else { return }
-        
         comentarios = comentarios_descargados
     }
     
@@ -57,17 +49,18 @@ class ControladorGeneral {
         descargar_comentarios(id)
     }
     
-    // 🔹 Nueva función para descargar usuarios
     func descargar_usuarios() async {
         guard let usuarios_descargados: [Usuario] =
                 await ServicioWeb().descargar_datos(url: "\(url_base)/users")
         else { return }
-        
         usuarios = usuarios_descargados
     }
     
-    // 🔹 Nueva función para obtener el nombre del usuario por id
     func obtenerNombreUsuario(id: Int) -> String? {
-        return usuarios.first(where: { $0.id == id })?.name
+        usuarios.first(where: { $0.id == id })?.name
+    }
+    
+    func obtenerUsuario(id: Int) -> Usuario? {
+        usuarios.first(where: { $0.id == id })
     }
 }
